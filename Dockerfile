@@ -33,6 +33,8 @@ RUN cp -R /tmpapp/* /home/sifu/
 RUN cp -R -r /tmpapp/. /home/sifu/
 RUN chown root:root -R /home/sifu/
 
+#################################################################
+
 WORKDIR /home/sifu
 
 RUN ls -la
@@ -49,8 +51,6 @@ RUN /bin/bash -l -c "gem install rubygems-bundler"
 
 # Setup Gems
 RUN /bin/bash -l -c "bundle install --gemfile=/home/sifu/Gemfile"
-
-#################################################################
 
 # Alow for arugments to sifu & notebook (server ip & port etc)
 
