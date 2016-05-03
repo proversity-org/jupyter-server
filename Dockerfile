@@ -9,7 +9,7 @@ FROM tzenderman/docker-rvm:latest
 RUN apt-get update
 
 # Install software 
-RUN apt-get install -y git supervisor
+RUN apt-get install -y git supervisor ruby-dev libgmp3-dev
 
 # USING DEPLOY KEYS ###############################################
 
@@ -37,20 +37,23 @@ RUN chown root:root -R /home/sifu/
 
 WORKDIR /home/sifu
 
-RUN ls -la
-
 # Install package dependencies
+RUN /bin/bash -l -c "rvm install $(cat .ruby-version) --verify-downloads"
+RUN /bin/bash -l -c "rvm use $(cat .ruby-version) --default"
+
 RUN rvm requirements
-RUN rvm install $(cat .ruby-version)
-RUN /bin/bash -l -c "rvm use --default"
+
+# Install Bundler
 
 RUN /bin/bash -l -c "ruby --version"
 
-# Install Bundler
-RUN /bin/bash -l -c "gem install rubygems-bundler"
+RUN /bin/bash -l -c "gem install bundler"
 
-# Setup Gems
-RUN /bin/bash -l -c "bundle install --gemfile=/home/sifu/Gemfile"
+RUN /bin/bash -l -c "bundle config --global silence_root_warning 1"
+
+RUN /bin/bash -l -c "bundle install"
+
+# --gemfile=/home/sifu/Gemfile"
 
 # Alow for arugments to sifu & notebook (server ip & port etc)
 
