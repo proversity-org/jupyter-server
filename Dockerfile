@@ -7,7 +7,7 @@ FROM jupyter/notebook
 # For RVM support - ultimately do out own solution here.
 FROM tzenderman/docker-rvm:latest
 
-# Update aptitude with new repo
+# Update aptitude
 RUN apt-get update
 
 # Install software 
