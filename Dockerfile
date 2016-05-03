@@ -52,12 +52,6 @@ RUN /bin/bash -l -c "bundle install --gemfile=/home/sifu/Gemfile"
 
 #################################################################
 
-# Install gems
-
-#RUN bundle install --gemfile=edx-api-jupyter/Gemfile
-
-# Set details like base directory as environment variables
-
 # Alow for arugments to sifu & notebook (server ip & port etc)
 
 # Set as environment variables
