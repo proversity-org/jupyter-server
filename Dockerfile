@@ -3,6 +3,8 @@
 # to run actual services.
 
 FROM jupyter/notebook
+
+# For RVM support - ultimately do out own solution here.
 FROM tzenderman/docker-rvm:latest
 
 # Update aptitude with new repo
@@ -37,23 +39,18 @@ RUN chown root:root -R /home/sifu/
 
 WORKDIR /home/sifu
 
-# Install package dependencies
+# Install ruby using RVM
 RUN /bin/bash -l -c "rvm install $(cat .ruby-version) --verify-downloads"
 RUN /bin/bash -l -c "rvm use $(cat .ruby-version) --default"
-
 RUN rvm requirements
 
 # Install Bundler
-
 RUN /bin/bash -l -c "ruby --version"
-
 RUN /bin/bash -l -c "gem install bundler"
-
 RUN /bin/bash -l -c "bundle config --global silence_root_warning 1"
 
+# Install Sifu gems
 RUN /bin/bash -l -c "bundle install"
-
-# --gemfile=/home/sifu/Gemfile"
 
 # Alow for arugments to sifu & notebook (server ip & port etc)
 
