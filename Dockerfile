@@ -11,7 +11,10 @@ FROM tzenderman/docker-rvm:latest
 RUN apt-get update
 
 # Install software 
-RUN apt-get install -y git supervisor ruby-dev libgmp3-dev
+RUN apt-get install -y git supervisor libgmp3-dev
+
+# Set up loggin for now
+RUN mkdir -p /var/log/supervisor
 
 # USING DEPLOY KEYS ###############################################
 
@@ -26,7 +29,6 @@ RUN apt-get install -y git supervisor ruby-dev libgmp3-dev
 ##################################################################
 
 # USING TOKENS ###################################################
-
 ARG DEPLOYMENT_TOKEN
 
 RUN git clone https://$DEPLOYMENT_TOKEN:x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
@@ -42,16 +44,34 @@ WORKDIR /home/sifu
 # Install ruby using RVM
 RUN /bin/bash -l -c "rvm install $(cat .ruby-version) --verify-downloads"
 RUN /bin/bash -l -c "rvm use $(cat .ruby-version) --default"
+RUN /bin/bash -l -c "rvm list"
 RUN rvm requirements
 
+# run docker env for ruby apps
+RUN /bin/bash -l -c "source .docker-ruby-version"
+
+RUN echo $RUBY-VERSION
+
+ENV GEM_HOME /usr/local
+ENV PATH /usr/local/rvm/gems/ruby-2.2.3/bin:$PATH
+ENV PATH /usr/local/rvm/rubies/ruby-2.2.3/bin:$PATH
+
 # Install Bundler
-RUN /bin/bash -l -c "ruby --version"
-RUN /bin/bash -l -c "gem install bundler"
-RUN /bin/bash -l -c "bundle config --global silence_root_warning 1"
+RUN ruby --version
+RUN gem install bundler
+RUN bundle config --global silence_root_warning 1
 
 # Install Sifu gems
-RUN /bin/bash -l -c "bundle install"
+RUN bundle install --gemfile=/home/sifu/Gemfile
 
 # Alow for arugments to sifu & notebook (server ip & port etc)
 
+#RUN /bin/bash -l -c "which bundle"
+#RUN /bin/bash -l -c "cp $(which ruby) /usr/bin/"
+
+# Set up supervisor config -- move this up later
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Set as environment variables
+CMD ["/usr/bin/supervisord"]
+#ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
