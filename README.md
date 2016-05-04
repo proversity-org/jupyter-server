@@ -23,6 +23,14 @@ docker exec -it proversity.jupyter.cont bash
 OR
 docker run -it --rm --name proversity.jupyter.cont -p 8889:8889 -v "$(pwd):/notebooks" jupyter/notebook
 ```
+You can leave volume binding out if needed:
+```bash
+-v "$(pwd):/notebooks"
+```
+You need to expose port numbers in the run command as well:
+```bash
+-p portno:portno -p portno:portno
+```
 #### A note on running multiple processes in a container
 ```text
 While it is generally recommended to only have one process per container, there are some instances where not having multiple processes per container

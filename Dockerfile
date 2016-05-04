@@ -2,10 +2,20 @@
 # Another Docker container should inherit with `FROM jupyter/notebook`
 # to run actual services.
 
+# For RVM support - ultimately do out own solution here.
+
 FROM jupyter/notebook
 
-# For RVM support - ultimately do out own solution here.
-FROM tzenderman/docker-rvm:latest
+#FROM tzenderman/docker-rvm:latest
+
+ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+
+# Install base system libraries.
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
 # Update aptitude
 RUN apt-get update
@@ -41,6 +51,15 @@ RUN chown root:root -R /home/sifu/
 
 WORKDIR /home/sifu
 
+# Install rvm, default ruby version and bundler.
+RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
+    curl -L https://get.rvm.io | /bin/bash -s stable && \
+    echo 'source /etc/profile.d/rvm.sh' >> /etc/profile && \
+    /bin/bash -l -c "rvm requirements;" && \
+    rvm install $(cat .ruby-version) && \
+    /bin/bash -l -c "rvm use --default $(cat .ruby-version) && \
+    gem install bundler"
+
 # Install ruby using RVM
 RUN /bin/bash -l -c "rvm install $(cat .ruby-version) --verify-downloads"
 RUN /bin/bash -l -c "rvm use $(cat .ruby-version) --default"
@@ -73,5 +92,13 @@ RUN bundle install --gemfile=/home/sifu/Gemfile
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set as environment variables
+ENV BUNDLE_GEMFILE /home/sifu/Gemfile
+ENV RAILS_ENV production 
+
+WORKDIR /notebooks
+
+EXPOSE 3334
+EXPOSE 8889
+
 CMD ["/usr/bin/supervisord"]
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
