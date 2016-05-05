@@ -21,7 +21,7 @@ RUN apt-get update && \
 RUN apt-get update
 
 # Install software 
-RUN apt-get install -y git supervisor libgmp3-dev
+RUN apt-get install -y git supervisor libgmp3-dev libpng-dev libjpeg8-dev libfreetype6-dev
 
 # Set up loggin for now
 RUN mkdir -p /var/log/supervisor
@@ -103,6 +103,8 @@ RUN bundle update rails_api_auth
 RUN git pull origin master
 
 WORKDIR /notebooks
+
+RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"http://0.0.0.0:8000\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
 
 EXPOSE 3334
 EXPOSE 3335
