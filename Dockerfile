@@ -99,6 +99,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # like the EB ENV public IP variable
 ENV DOCKER_IP 0.0.0.0
 
+RUN bundle update rails_api_auth
 RUN git pull origin master
 
 WORKDIR /notebooks
