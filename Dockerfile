@@ -81,17 +81,19 @@ RUN ruby --version
 RUN gem install bundler
 RUN bundle config --global silence_root_warning 1
 
+# Set as environment variables
+ENV BUNDLE_GEMFILE /home/sifu/Gemfile
+ENV RAILS_ENV production
+
 # Install Sifu gems
 RUN bundle install --gemfile=/home/sifu/Gemfile
+
+RUN bundle exec rake db:migrate
 
 # Alow for arugments to sifu & notebook (server ip & port etc)
 
 # Set up supervisor config -- move this up later
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Set as environment variables
-ENV BUNDLE_GEMFILE /home/sifu/Gemfile
-ENV RAILS_ENV production 
 
 # Perhaps set this from some other environment variable
 # like the EB ENV public IP variable
