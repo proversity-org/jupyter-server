@@ -38,9 +38,10 @@ RUN mkdir -p /var/log/supervisor
 
 ##################################################################
 
+RUN echo "More cheap"
+
 # USING TOKENS ###################################################
 ARG DEPLOYMENT_TOKEN
-
 RUN git clone https://$DEPLOYMENT_TOKEN:x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
 RUN mkdir /home/sifu/
 RUN cp -R /tmpapp/* /home/sifu/
@@ -85,9 +86,6 @@ RUN bundle install --gemfile=/home/sifu/Gemfile
 
 # Alow for arugments to sifu & notebook (server ip & port etc)
 
-#RUN /bin/bash -l -c "which bundle"
-#RUN /bin/bash -l -c "cp $(which ruby) /usr/bin/"
-
 # Set up supervisor config -- move this up later
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -95,10 +93,16 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ENV BUNDLE_GEMFILE /home/sifu/Gemfile
 ENV RAILS_ENV production 
 
+# Perhaps set this from some other environment variable
+# like the EB ENV public IP variable
+ENV DOCKER_IP 0.0.0.0
+
+RUN git pull origin master
+
 WORKDIR /notebooks
 
 EXPOSE 3334
-EXPOSE 8889
+EXPOSE 3335
 
 CMD ["/usr/bin/supervisord"]
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
