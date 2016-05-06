@@ -1,0 +1,12 @@
+# Things to consider
+# - how the heck do we get the correct url's sent to sifu?
+# - How do we provide an environment variable to the environment on creation?
+# - If the edx platform is running, is the api still on port 8001 when on staging
+# - What is the port number for edx platform when on staging?
+
+#Create application with some settings
+
+#Create Environment with some settings
+eb create --envvars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN 
+
+# Or use .ebextensions

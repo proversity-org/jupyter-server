@@ -2,32 +2,20 @@
 # Another Docker container should inherit with `FROM jupyter/notebook`
 # to run actual services.
 
-# For RVM support - ultimately do out own solution here.
-
 FROM jupyter/notebook
 
-#FROM tzenderman/docker-rvm:latest
 
+# rvm stuff
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
-# Install base system libraries.
+# rvm stuff: Install base system libraries.
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
+    apt-get install -y --no-install-recommends curl git supervisor libgmp3-dev libpng-dev libjpeg8-dev libfreetype6-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
-# Update aptitude
-RUN apt-get update
-
-# Install software 
-RUN apt-get install -y git supervisor libgmp3-dev libpng-dev libjpeg8-dev libfreetype6-dev
-
-# Set up loggin for now
-RUN mkdir -p /var/log/supervisor
-
 # USING DEPLOY KEYS ###############################################
-
 # Make ssh dir
 #RUN mkdir /root/.ssh/
 
@@ -38,19 +26,16 @@ RUN mkdir -p /var/log/supervisor
 
 ##################################################################
 
-RUN echo "More cheap"
-
 # USING TOKENS ###################################################
 ARG DEPLOYMENT_TOKEN
 RUN git clone https://$DEPLOYMENT_TOKEN:x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
-RUN mkdir /home/sifu/
-RUN cp -R /tmpapp/* /home/sifu/
-RUN cp -R -r /tmpapp/. /home/sifu/
-RUN chown root:root -R /home/sifu/
-
+RUN mkdir /sifu/
+RUN cp -R /tmpapp/* /sifu/
+RUN cp -R -r /tmpapp/. /sifu/
+RUN chown root:root -R /sifu/
 #################################################################
 
-WORKDIR /home/sifu
+WORKDIR /sifu
 
 # Install rvm, default ruby version and bundler.
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
@@ -77,23 +62,18 @@ ENV PATH /usr/local/rvm/gems/ruby-2.2.3/bin:$PATH
 ENV PATH /usr/local/rvm/rubies/ruby-2.2.3/bin:$PATH
 
 # Install Bundler
-RUN ruby --version
 RUN gem install bundler
 RUN bundle config --global silence_root_warning 1
 
-# Set as environment variables
-ENV BUNDLE_GEMFILE /home/sifu/Gemfile
+# Set sifu environment variables
+ENV BUNDLE_GEMFILE /sifu/Gemfile
 ENV RAILS_ENV production
 
 # Install Sifu gems
-RUN bundle install --gemfile=/home/sifu/Gemfile
+RUN bundle install --gemfile=/sifu/Gemfile
 
+# Prepare the database
 RUN bundle exec rake db:migrate
-
-# Alow for arugments to sifu & notebook (server ip & port etc)
-
-# Set up supervisor config -- move this up later
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Perhaps set this from some other environment variable
 # like the EB ENV public IP variable
@@ -107,10 +87,16 @@ WORKDIR /notebooks
 RUN pip install --upgrade ipywidgets==5.0.0 
 RUN jupyter nbextension enable -y widgetsnbextension
 
-RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"http://0.0.0.0:8000\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
+RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"*\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
 
 EXPOSE 3334
 EXPOSE 3335
+
+# Set up supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Supervirsor stuff: Set up loggin for now
+RUN mkdir -p /var/log/supervisor
 
 CMD ["/usr/bin/supervisord"]
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
