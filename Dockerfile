@@ -104,6 +104,9 @@ RUN git pull origin master
 
 WORKDIR /notebooks
 
+RUN pip install --upgrade ipywidgets==5.0.0 
+RUN jupyter nbextension enable -y widgetsnbextension
+
 RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"http://0.0.0.0:8000\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
 
 EXPOSE 3334
