@@ -4,6 +4,15 @@
 
 FROM jupyter/notebook
 
+RUN pip install --upgrade ipywidgets==5.0.0
+RUN jupyter nbextension enable -y widgetsnbextension
+
+RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"*\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
+
+RUN echo "c.Exporter.template_path = [os.path.join(jupyter_data_dir(), 'templates')] c.Exporter.preprocessors = [\"pre_codefolding.CodeFoldingPreprocessor\",\"pre_pymarkdown.PyMarkdownPreprocessor\"] c.NbConvertApp.postprocessor_class = \"post_embedhtml.EmbedPostProcessor\""
+
+RUN echo "c.NotebookApp.nbserver_extensions = ['nbextensions']" >> /root/.jupyter/jupyter_notebook_config.py
+
 # rvm stuff
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
@@ -25,22 +34,27 @@ RUN apt-get update && \
 
 ##################################################################
 
+RUN touch /tmp/.ruby-version && touch /tmp/.docker-ruby-version
+COPY .ruby-version /tmp/.ruby-version
+COPY .docker-ruby-version /tmp/.docker-ruby-version
+
 # Install rvm, default ruby version and bundler.
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
     curl -L https://get.rvm.io | /bin/bash -s stable && \
     echo 'source /etc/profile.d/rvm.sh' >> /etc/profile && \
     /bin/bash -l -c "rvm requirements;" && \
-    rvm install $(cat .ruby-version) && \
-    /bin/bash -l -c "rvm use --default $(cat .ruby-version) && \
+    rvm install $(cat /tmp/.ruby-version) --verify-downloads && \
+    /bin/bash -l -c "rvm use --default $(cat /tmp/.ruby-version) && \
     gem install bundler"
 
+
 # Install ruby using RVM
-RUN /bin/bash -l -c "rvm install $(cat .ruby-version) --verify-downloads"
-RUN /bin/bash -l -c "rvm use $(cat .ruby-version) --default"
+#RUN /bin/bash -l -c "rvm install $(cat /tmp/.ruby-version) --verify-downloads"
+#RUN /bin/bash -l -c "rvm use $(cat /tmp/.ruby-version) --default"
 RUN rvm requirements
 
 # run docker env for ruby apps
-RUN /bin/bash -l -c "source .docker-ruby-version"
+RUN /bin/bash -l -c "source /tmp/.docker-ruby-version"
 
 RUN echo $RUBY_VERSION
 
@@ -48,14 +62,18 @@ ENV GEM_HOME /usr/local
 ENV PATH /usr/local/rvm/gems/ruby-$RUBY_VERSION/bin:$PATH
 ENV PATH /usr/local/rvm/rubies/ruby-$RUBY_VERSION/bin:$PATH
 
+RUN rvm list
+
 # Install Bundler
-RUN gem install bundler
-RUN bundle config --global silence_root_warning 1
+RUN /bin/bash -l -c "gem install bundler"
+RUN /bin/bash -l -c "bundle config --global silence_root_warning 1"
 
 # Set sifu environment variables
 ENV BUNDLE_GEMFILE /sifu/Gemfile
 ENV RAILS_ENV production
 
+# Try and cleanup some cruft
+RUN apt-get autoremove
 
 # USING TOKENS ###################################################
 ARG DEPLOYMENT_TOKEN
@@ -69,28 +87,19 @@ RUN chown root:root -R /sifu/
 WORKDIR /sifu
 
 # Install Sifu gems
-RUN bundle install --gemfile=/sifu/Gemfile
+RUN /bin/bash -l -c "bundle install"
 
 # Prepare the database
-RUN bundle exec rake db:migrate
+RUN /bin/bash -l -c "bundle exec rake db:migrate"
 
 # Perhaps set this from some other environment variable
 # like the EB ENV public IP variable
 ENV DOCKER_IP 0.0.0.0
 
-RUN bundle update rails_api_auth
+RUN /bin/bash -l -c "bundle update rails_api_auth"
 RUN git pull origin master
 
 WORKDIR /notebooks
-
-RUN pip install --upgrade ipywidgets==5.0.0 
-RUN jupyter nbextension enable -y widgetsnbextension
-
-RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"*\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
-
-RUN echo "c.Exporter.template_path = [os.path.join(jupyter_data_dir(), 'templates')] c.Exporter.preprocessors = [\"pre_codefolding.CodeFoldingPreprocessor\",\"pre_pymarkdown.PyMarkdownPreprocessor\"] c.NbConvertApp.postprocessor_class = \"post_embedhtml.EmbedPostProcessor\""
-
-RUN echo "c.NotebookApp.nbserver_extensions = ['nbextensions']" >> /root/.jupyter/jupyter_notebook_config.py
 
 EXPOSE 3334
 EXPOSE 3335
