@@ -1,4 +1,4 @@
-FROM test/cleanup
+FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
 # USING TOKENS ###################################################
 ARG DEPLOYMENT_TOKEN

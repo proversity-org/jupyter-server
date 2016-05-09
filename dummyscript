@@ -4,6 +4,13 @@
 # - If the edx platform is running, is the api still on port 8001 when on staging
 # - What is the port number for edx platform when on staging?
 
+# Create a container repo if it does not exist
+# get docker-ecr login credentials if needed
+# if it exists, check if image exists
+# If not or version outdated upload new image
+
+# main dockerfile should not need any updating unless we are creating the repo for the frist time
+
 #Create application with some settings
 
 #Create Environment with some settings
