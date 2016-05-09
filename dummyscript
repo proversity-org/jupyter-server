@@ -17,3 +17,6 @@
 eb create --envvars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN 
 
 # Or use .ebextensions
+
+# make sure application versions are cleaned
+
