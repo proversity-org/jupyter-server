@@ -13,6 +13,9 @@ during its build and will be able to clone prviate repos.
 
 ## Build
 ```bash
+# For the base image
+docker build --build-arg -t proversity/base-notebook
+# For the final image
 docker build --build-arg DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN -t proversity/notebook .
 ```
 
