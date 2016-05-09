@@ -89,6 +89,10 @@ RUN jupyter nbextension enable -y widgetsnbextension
 
 RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"*\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
 
+RUN echo "c.Exporter.template_path = [os.path.join(jupyter_data_dir(), 'templates')] c.Exporter.preprocessors = [\"pre_codefolding.CodeFoldingPreprocessor\",\"pre_pymarkdown.PyMarkdownPreprocessor\"] c.NbConvertApp.postprocessor_class = \"post_embedhtml.EmbedPostProcessor\""
+
+RUN echo "c.NotebookApp.nbserver_extensions = ['nbextensions']" >> /root/.jupyter/jupyter_notebook_config.py
+
 EXPOSE 3334
 EXPOSE 3335
 
