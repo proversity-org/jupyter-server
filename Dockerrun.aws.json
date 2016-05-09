@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "test/supervisord",
+    "Name": "proversity/docker-jupyter",
     "Update": "true"
   },
   "Ports": [
