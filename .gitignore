@@ -1,5 +1,6 @@
 id_rsa
 *.zip
+.deployment_token
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

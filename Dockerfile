@@ -1,8 +1,12 @@
 FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
+# For .ebeextension solution to build args problem.
+COPY .deployment_token /tmp/.deployment_token
+
 # USING TOKENS ###################################################
-ARG DEPLOYMENT_TOKEN
-RUN git clone https://$DEPLOYMENT_TOKEN:x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
+# Waiting for AWS to support build args in EB Docker deploys.
+#ARG DEPLOYMENT_TOKEN
+RUN git clone https://$(cat /tmp/.deployment_token):x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
 RUN mkdir /sifu/
 RUN cp -R /tmpapp/* /sifu/
 RUN cp -R -r /tmpapp/. /sifu/
