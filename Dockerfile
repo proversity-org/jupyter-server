@@ -4,7 +4,6 @@
 
 FROM jupyter/notebook
 
-
 # rvm stuff
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
@@ -26,17 +25,6 @@ RUN apt-get update && \
 
 ##################################################################
 
-# USING TOKENS ###################################################
-ARG DEPLOYMENT_TOKEN
-RUN git clone https://$DEPLOYMENT_TOKEN:x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
-RUN mkdir /sifu/
-RUN cp -R /tmpapp/* /sifu/
-RUN cp -R -r /tmpapp/. /sifu/
-RUN chown root:root -R /sifu/
-#################################################################
-
-WORKDIR /sifu
-
 # Install rvm, default ruby version and bundler.
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
     curl -L https://get.rvm.io | /bin/bash -s stable && \
@@ -49,17 +37,16 @@ RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
 # Install ruby using RVM
 RUN /bin/bash -l -c "rvm install $(cat .ruby-version) --verify-downloads"
 RUN /bin/bash -l -c "rvm use $(cat .ruby-version) --default"
-RUN /bin/bash -l -c "rvm list"
 RUN rvm requirements
 
 # run docker env for ruby apps
 RUN /bin/bash -l -c "source .docker-ruby-version"
 
-RUN echo $RUBY-VERSION
+RUN echo $RUBY_VERSION
 
 ENV GEM_HOME /usr/local
-ENV PATH /usr/local/rvm/gems/ruby-2.2.3/bin:$PATH
-ENV PATH /usr/local/rvm/rubies/ruby-2.2.3/bin:$PATH
+ENV PATH /usr/local/rvm/gems/ruby-$RUBY_VERSION/bin:$PATH
+ENV PATH /usr/local/rvm/rubies/ruby-$RUBY_VERSION/bin:$PATH
 
 # Install Bundler
 RUN gem install bundler
@@ -68,6 +55,18 @@ RUN bundle config --global silence_root_warning 1
 # Set sifu environment variables
 ENV BUNDLE_GEMFILE /sifu/Gemfile
 ENV RAILS_ENV production
+
+
+# USING TOKENS ###################################################
+ARG DEPLOYMENT_TOKEN
+RUN git clone https://$DEPLOYMENT_TOKEN:x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
+RUN mkdir /sifu/
+RUN cp -R /tmpapp/* /sifu/
+RUN cp -R -r /tmpapp/. /sifu/
+RUN chown root:root -R /sifu/
+#################################################################
+
+WORKDIR /sifu
 
 # Install Sifu gems
 RUN bundle install --gemfile=/sifu/Gemfile
