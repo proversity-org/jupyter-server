@@ -30,8 +30,7 @@ RUN git pull origin master
 
 WORKDIR /notebooks
 
-EXPOSE 3334
-EXPOSE 3335
+EXPOSE [3334, 3335]
 
 CMD ["/usr/bin/supervisord"]
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
