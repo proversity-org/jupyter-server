@@ -4,6 +4,8 @@
 # - If the edx platform is running, is the api still on port 8001 when on staging
 # - What is the port number for edx platform when on staging?
 
+# REALLY NEED A WAY TO UPDATE the ELB with ingress and outgress rules
+
 # 1. aws cli needs to set
 # 2. Check status of container repo in Oregon us-west-2
 # 3. Create repo if it does not exist
