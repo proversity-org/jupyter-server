@@ -4,6 +4,13 @@
 # - If the edx platform is running, is the api still on port 8001 when on staging
 # - What is the port number for edx platform when on staging?
 
+# 1. aws cli needs to set
+# 2. Check status of container repo in Oregon us-west-2
+# 3. Create repo if it does not exist
+# 4. Get docker-ecr login details
+# 5. Make sure the image build is up to date
+# 6. 
+
 # Create a container repo if it does not exist
 # get docker-ecr login credentials if needed
 # if it exists, check if image exists
@@ -14,7 +21,14 @@
 #Create application with some settings
 
 #Create Environment with some settings
+# Check if the env var exists
 eb create --envvars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN 
+
+# if the environment already exists use it
+
+# Check the env variable is also set
+
+# if not set it
 
 # Or use .ebextensions
 
