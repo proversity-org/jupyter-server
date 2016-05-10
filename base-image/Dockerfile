@@ -72,11 +72,5 @@ RUN /bin/bash -l -c "bundle config --global silence_root_warning 1"
 ENV BUNDLE_GEMFILE /sifu/Gemfile
 ENV RAILS_ENV production
 
-# Set up supervisor config
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Supervirsor stuff: Set up loggin for now
-RUN mkdir -p /var/log/supervisor
-
 # Try and cleanup some cruft
 RUN apt-get autoremove

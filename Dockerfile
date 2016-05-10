@@ -23,10 +23,16 @@ RUN /bin/bash -l -c "bundle exec rake db:migrate"
 
 # Perhaps set this from some other environment variable
 # like the EB ENV public IP variable
-ENV DOCKER_IP 172-31-26-245
+ENV DOCKER_IP 172.31.26.245
 
 RUN /bin/bash -l -c "bundle update rails_api_auth"
 RUN git pull origin master
+
+# Set up supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Supervirsor stuff: Set up loggin for now
+RUN mkdir -p /var/log/supervisor
 
 WORKDIR /notebooks
 
