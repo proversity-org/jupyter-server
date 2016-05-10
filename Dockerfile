@@ -1,11 +1,7 @@
 FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
-RUN ls -la
-
 # For .ebeextension solution to build args problem.
 COPY .deployment_token /tmp/.deployment_token
-
-RUN $(cat /tmp/.deployment_token)
 
 # USING TOKENS ###################################################
 # Waiting for AWS to support build args in EB Docker deploys.
