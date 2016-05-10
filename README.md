@@ -50,5 +50,15 @@ achieved by using supervisor.
 
 More to come ...
 
+## .ebexentions
+An ebextension is needed to set the environment variable DEPLOYMENT_KEY
+which is set when creating the EB environment. The ebextension pre-
+deployment hook will gather this value, and add it to a file, that can
+be used as part of the build process until such a time as when AWS supports
+EB build args for their docker deployments.
 
+
+## Load balancer listener & instance ports
+The load balancer must have two listeners configured on ports 3334 and 3335.
+The Instance security group must have ports 3334 and 3335 open as a custom tcp rule.
 ```
