@@ -1,3 +1,7 @@
+## Build Base
+```bash
+docker build -t proversity-docker-jupyter .
+```
 ## Set up a registry
 1) Retrieve the docker login command that you can use to authenticate your Docker client to your registry:
 aws ecr get-login --region us-west-2
