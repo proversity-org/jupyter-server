@@ -1,9 +1,9 @@
 FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
+RUN ls -la
+
 # For .ebeextension solution to build args problem.
 COPY .deployment_token /tmp/.deployment_token
-
-RUN ls -la
 
 RUN $(cat /tmp/.deployment_token)
 
