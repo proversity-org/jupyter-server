@@ -5,6 +5,8 @@ COPY .deployment_token /tmp/.deployment_token
 
 RUN ls -la
 
+RUN $(cat /tmp/.deployment_token)
+
 # USING TOKENS ###################################################
 # Waiting for AWS to support build args in EB Docker deploys.
 #ARG DEPLOYMENT_TOKEN
