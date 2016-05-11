@@ -2,14 +2,19 @@
 
 #### Regarding Access Tokens
 
-```text
 Access tokens need to be generated in github against a user's profile.
 The access token must be added to the elastic beanstalk environment variables,
 this can be done via API or via AWS console.
 
 The docker build will reference the access token environment variable
 during its build and will be able to clone prviate repos.
-```
+
+## Ports
+Jupyter Notebook is always run on port 3335, and Sifu on 3334. In future the option
+to change these as will be provided. But it speaks to the deployment process as a
+whole rather than just a software configuration. It would require not only updating
+software configurations, but also updating the ebexentions that set up the Nginx
+environment as well as listeners and security group ports.
 
 ## Build
 ```bash
@@ -57,8 +62,8 @@ achieved by using supervisor.
 Supervisor configuration exists in the root of this project, and is passed into
 Docker during the build process. CMD is then set to run supervisor on Docker run.
 
-The supervisor is run in nodaemon mode, and starts the Sifu app server, and then
-Jupyter Notebook server as follows respectively.
+The supervisor is run in nodaemon mode, it starts the Sifu app server, and then the
+Jupyter Notebook server respectively.
 
 ```text
 bundle exec puma -C /sifu/config/puma.rb /sifu/config.ru
@@ -79,10 +84,12 @@ machine.
 
 #### 01_eb_files.config
 This ebextension is a pre-deployment hook that is executed before any other hooks
-in ```/opt/elasticbeanstalk/hooks/appdeploy/pre/```. It runs an eb get-config
-command that returns the environment variable DEPLOYMENT_TOKEN. This env variable
-is then placed in a file for the Docker build process to use. It is anticipated that
-this could be removed eventually once AWS supports the Docker --build-arg flag
+in ```/opt/elasticbeanstalk/hooks/appdeploy/pre/```.
+
+It runs an eb get-config command that returns the environment variable DEPLOYMENT_TOKEN. This env variable
+is then placed in a file for the Docker build process to use.
+
+It is anticipated that this could be removed eventually once AWS supports the Docker --build-arg flag
 in Dockerrun.aws.json (v1 & v2) configrations.
 
 #### 02_eb_files.config
