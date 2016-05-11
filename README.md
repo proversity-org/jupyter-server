@@ -1,4 +1,4 @@
-# Jupyter Notebook Docker deployment with Sifu wrapper
+# Jupyter Notebook Docker deployment with Sifu
 
 This system is a scalable deployment of Jupyter Notebook Docker Containers on
 AWS Elastic Beanstalk.
@@ -23,7 +23,7 @@ during its build and will be able to clone prviate repos.
 
 ## Ports
 Jupyter Notebook is always run on port 3335, and Sifu on 3334. In future the option
-to change these as will be provided. But it speaks to the deployment process as a
+to change these will be provided. But it speaks to the deployment process as a
 whole rather than just a software configuration. It would require not only updating
 software configurations, but also updating the ebexentions that set up the Nginx
 environment as well as listeners and security group ports.
@@ -38,6 +38,11 @@ cd ..
 # For the final image
 docker build --build-arg DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN -t proversity/notebook .
 ```
+
+Build arguments are currently not supported by AWS Elastic Beanstalk, therefore for
+the time being you must ensure the deployment token exists in the project directory
+in a file called .deployment_token. When running the above command you may then
+leave out --build-arg. It is kept for future reference.
 
 ## Running
 The following examples are illustrations mostly for the purpose of running the
@@ -164,4 +169,19 @@ The resources.config ebextension ensure these ports are properly avaiable for
 the EB instance, the EB load balancer and that the EB load balancer listens on them.
 
 #### Future automated deployments
+In future this project will perform the following automatically in a deployment script:
 
+1. Check AWS CLI & EB CLI installed, and credentials exist.
+2. Check status of container registry in Oregon (us-west-2).
+3. Create registry if it does not exist.
+4. Get docker-ecr login details.
+5. Login for the user (these login sessions expire).
+6. Make sure the image build is up to date, otherwise build.
+7. Upload to the registry.
+8. In region North California, allow a user to use an existing application or create a new one.
+9. Allow the user to use an existing environment or create a new one.
+10. Check if .deployment_token exists in project directory root or as an environment variable.
+11. Ask the user for a deployment token if needed and handle the updating of .deployment_token.
+12. Ask the user to specify ports.
+13. Update .ebextensions and save the extra config in a .ports file. (This is ignored by git).
+14. Deploy.
