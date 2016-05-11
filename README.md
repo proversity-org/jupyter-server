@@ -16,7 +16,12 @@ user notebooks ensuring high availability across Docker containers.
 
 Access tokens need to be generated in github against a user's profile.
 The access token must be added to the elastic beanstalk environment variables,
-this can be done via API or via AWS console.
+this can be done via API or via AWS console, but in our scenario this must be done
+at environment creation time, using the eb cli command:
+
+```bash
+eb create --envvars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN
+```
 
 The docker build will reference the access token environment variable
 during its build and will be able to clone prviate repos.
