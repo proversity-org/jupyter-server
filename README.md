@@ -1,5 +1,17 @@
 # Jupyter Notebook Docker deployment with Sifu wrapper
 
+This system is a scalable deployment of Jupyter Notebook Docker Containers on
+AWS Elastic Beanstalk.
+
+Authentication is handled the Sifu API from the Xblock. Sifu uses Edx as Oauth 2
+authenticator. Once authenticated user notebooks can be created, destroyed, and served through Sifu. Eventually,
+accessing the Jupyter Notebook server will be restricted to the iframe it is served in
+as well as other security modifications.
+
+Each Docker container on an EB instance will use mounted volumes based off of the AWS
+Elastic File System service. This means each container has the same access to
+user notebooks ensuring high availability across Docker containers.
+
 #### Regarding Access Tokens
 
 Access tokens need to be generated in github against a user's profile.
