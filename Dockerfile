@@ -38,5 +38,7 @@ WORKDIR /notebooks
 
 EXPOSE 3334 3335
 
+RUN echo "Done..."
+
 CMD ["/usr/bin/supervisord"]
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
