@@ -112,7 +112,7 @@ It runs an eb get-config command that returns the environment variable DEPLOYMEN
 is then placed in a file for the Docker build process to use.
 
 It is anticipated that this could be removed eventually once AWS supports the Docker --build-arg flag
-in Dockerrun.aws.json (v1 & v2) configrations.
+in Dockerrun.aws.json (v1 & v2) configurations.
 
 #### 02_eb_files.config
 This ebextension is a post-deployment hook that is executed after the Docker
@@ -170,15 +170,23 @@ as a work around for now.
 
 The load balancer must have two listeners configured on ports 3334 and 3335. In
 addition its security group must also allow for Ingress & Egress from these ports.
-The resources.config ebextension ensure these ports are properly avaiable for
-the EB instance, the EB load balancer and that the EB load balancer listens on them.
+The resources.config ebextension ensures these ports are properly configured for
+the EB instance security group, the EB load balancer security group and that the EB load balancer listens on them.
+
+#### Note on ECR - permissions
+Permissions must be set on an ECR, so that Elastic Beanstalk may use it.
+This can be done in the console, but should really be handled in the script below.
+
+It is a role not a user that needs permission: arn:aws:iam::<account#>:role/aws-elasticbeanstalk-ec2-role
+
+In particular it is the elasticbeanstalk-ec2-role that needs permission.
 
 #### Future automated deployments
 In future this project will perform the following automatically in a deployment script:
 
 1. Check AWS CLI & EB CLI installed, and credentials exist.
 2. Check status of container registry in Oregon (us-west-2).
-3. Create registry if it does not exist.
+3. Create registry if it does not exist & set permissions
 4. Get docker-ecr login details.
 5. Login for the user (these login sessions expire).
 6. Make sure the image build is up to date, otherwise build.
