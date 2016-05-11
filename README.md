@@ -13,27 +13,30 @@ during its build and will be able to clone prviate repos.
 
 ## Build
 ```bash
+cd base-image
 # For the base image
 docker build --build-arg -t proversity/base-notebook
+
+cd ..
 # For the final image
 docker build --build-arg DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN -t proversity/notebook .
 ```
 
 ## Running
+The following examples are illustrations mostly for the purpose of running the
+Docker container locally.
+
 ```bash
-docker run -d --name proversity.jupyter.cont -p 8888:8888 -v "$(pwd):/notebooks" jupyter/notebook
+docker run -d --name proversity.jupyter.cont -p 3334:3334 -p 3335:3335 -v "$(pwd):/notebooks" jupyter/notebook
 docker exec -it proversity.jupyter.cont bash
 OR
-docker run -it --rm --name proversity.jupyter.cont -p 8889:8889 -v "$(pwd):/notebooks" jupyter/notebook
+docker run -it --rm --name proversity.jupyter.cont -p 3334:3334 -p 3335:3335 -v "$(pwd):/notebooks" jupyter/notebook
 ```
-You can leave volume binding out if needed:
+You can leave volume binding out if not needed:
 ```bash
 -v "$(pwd):/notebooks"
 ```
-You need to expose port numbers in the run command as well:
-```bash
--p portno:portno -p portno:portno
-```
+
 If you're running apps locally, and you want to test your Docker container, it can be useful to allow the container
 to run on the host system's network stack; add the following flag to the docker run command:
 ```bash
@@ -51,16 +54,28 @@ In our case we really need authentication & proxying to be handled by Sifu, so
 it makes sense to have them run in the same container. This behaviour can be easily
 achieved by using supervisor.
 
-More to come ...
+Supervisor configuration exists in the root of this project, and is passed into
+Docker during the build process. CMD is then set to run supervisor on Docker run.
+
+The supervisor is run in nodaemon mode, and starts the Sifu app server, and then
+Jupyter Notebook server as follows respectively.
+
+```text
+bundle exec puma -C /sifu/config/puma.rb /sifu/config.ru
+
+jupyter notebook --no-browser --port=3335 --ip=$DOCKER_IP
+```
+
+In future we should be able to remove the DOCKER_IP variable, as it appears all
+server processes default to use 0.0.0.0 as their IP, and anyway mapping between
+Docker container IP on the EB host and the Docker container host IP is done automatically.
+Note in this instance getting Docker to run using the host's network stack is not
+appropriate, it might only be appropriate if you are doing debugging on your local
+machine.
 
 ## .ebexentions
-An ebextension is needed to set the environment variable DEPLOYMENT_KEY
-which is set when creating the EB environment. The ebextension pre-
-deployment hook will gather this value, and add it to a file, that can
-be used as part of the build process until such a time as when AWS supports
-EB build args for their docker deployments.
 
-### ebextenions deployment components overview
+### .ebextensions deployment components overview
 
 #### 01_eb_files.config
 This ebextension is a pre-deployment hook that is executed before any other hooks
@@ -104,9 +119,9 @@ server {
        }
 }
 ```
-Then the upstream configuration will look like:
+The upstream configuration will then look like:
 ```text
-upstream jupyter {
+upstream sifu {
         server 172.17.0.2:3334;
         keepalive 256;
 }
@@ -117,13 +132,17 @@ upstream jupyter {
 Where 127.17.0.2 is the IP of the Docker container.
 
 #### 03_eb_files.config
-Is a enact-deployment hook at removes our additions to the nginx sites-available
-folder, to prevent the initial eb deployment from complaining. There might be a
+This deployment hook is an enact-deployment hook at removes our additions to the nginx sites-available
+folder, to prevent the subsequent eb deployments from failing. There might be a
 better way to structure our ebextensions such this is not needed, but it is fine
 as a work around for now.
 
-## Load balancer listener & instance ports
-The load balancer must have two listeners configured on ports 3334 and 3335.
-The Instance security group must have ports 3334 and 3335 open as a custom tcp rule.
+#### resources.config
 
+The load balancer must have two listeners configured on ports 3334 and 3335. In
+addition its security group must also allow for Ingress & Egress from these ports.
+The resources.config ebextension ensure these ports are properly avaiable for
+the EB instance, the EB load balancer and that the EB load balancer listens on them.
+
+#### Future automated deployments
 
