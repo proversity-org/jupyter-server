@@ -26,6 +26,8 @@ RUN /bin/bash -l -c "bundle exec rake db:migrate"
 ENV DOCKER_IP 0.0.0.0
 
 RUN /bin/bash -l -c "bundle update rails_api_auth"
+
+RUN echo "Updating sifu source..."
 RUN git pull origin master
 
 # Set up supervisor config
@@ -37,8 +39,6 @@ RUN mkdir -p /var/log/supervisor
 WORKDIR /notebooks
 
 EXPOSE 3334 3335
-
-RUN echo "Done..."
 
 CMD ["/usr/bin/supervisord"]
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
