@@ -3,6 +3,8 @@ FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:late
 # For .ebeextension solution to build args problem.
 COPY .deployment_token /tmp/.deployment_token
 
+RUN echo "Clone fresh each time"
+
 # USING TOKENS ###################################################
 # Waiting for AWS to support build args in EB Docker deploys.
 #ARG DEPLOYMENT_TOKEN
@@ -26,9 +28,6 @@ RUN /bin/bash -l -c "bundle exec rake db:migrate"
 ENV DOCKER_IP 0.0.0.0
 
 RUN /bin/bash -l -c "bundle update rails_api_auth"
-
-RUN echo "Updating sifu source..."
-RUN git pull origin master
 
 # Set up supervisor config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
