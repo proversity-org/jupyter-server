@@ -1,30 +1,5 @@
 FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
-# For .ebeextension solution to build args problem.
-COPY .deployment_token /tmp/.deployment_token
-
-ENV DB_NAME production
-ENV RDS_USERNAME root
-ENV RDS_PASSWORD secretsecret
-ENV RDS_PORT 3306
-
-# USING TOKENS ###################################################
-# Waiting for AWS to support build args in EB Docker deploys.
-#ARG DEPLOYMENT_TOKEN
-RUN git clone https://$(cat /tmp/.deployment_token):x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
-RUN mkdir /sifu/
-RUN cp -R /tmpapp/* /sifu/
-RUN cp -R -r /tmpapp/. /sifu/
-RUN chown root:root -R /sifu/
-#################################################################
-
-WORKDIR /sifu
-
-# Install Sifu gems
-RUN /bin/bash -l -c "bundle install"
-
-RUN git pull origin master
-
 # Prepare the database
 RUN /bin/bash -l -c "bundle exec rake db:migrate"
 
