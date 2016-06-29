@@ -27,6 +27,10 @@ eb create --envvars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database
 The docker build will reference the access token environment variable
 during its build and will be able to clone prviate repos.
 
+## Elastic File System EFS
+
+You are only able to run EFS in the same region as your EB deployment.
+
 ## Ports
 Jupyter Notebook is always run on port 3335, and Sifu on 3334. In future the option
 to change these will be provided. But it speaks to the deployment process as a
@@ -185,11 +189,6 @@ In particular it is the elasticbeanstalk-ec2-role that needs permission.
 #### Future automated deployments
 In future this project will perform the following automatically in a deployment script:
 
--- automatic creation of IAM user for access to S3 buckets
--- automatic creation of S3 bucket specific to this deploy
--- automatic update of the credentials in environment.config
--- automatically mount file system to docker
-
 1. Check AWS CLI & EB CLI installed, and credentials exist.
 2. Check status of container registry in Oregon (us-west-2).
 3. Create registry if it does not exist & set permissions
@@ -204,3 +203,66 @@ In future this project will perform the following automatically in a deployment 
 12. Ask the user to specify ports.
 13. Update .ebextensions and save the extra config in a .ports file. (This is ignored by git).
 14. Deploy.
+
+#### Using S3FUSE
+Below is a legacy .ebextension config file for using fuse to mount an S3 bucket as a folder on and EC2 instance.
+Note in order to use this, you will have to create an S3 bucket, and configure how it syncs after updates to a file.
+```yaml
+packages:
+    yum:
+        gcc: []
+        libstdc++-devel: []
+        gcc-c++: []
+        fuse: []
+        fuse-devel: []
+        libcurl-devel: []
+        libxml2-devel: []
+        openssl-devel: []
+        mailcap: []
+        automake: []
+
+sources:
+    /tmp: https://github.com/s3fs-fuse/s3fs-fuse/archive/v1.80.zip
+
+files:
+    "/etc/fuse.conf" :
+        mode: "000644"
+        owner: root
+        group: root
+        content: |
+            # mount_max = 1000
+            user_allow_other
+
+    "/opt/elasticbeanstalk/hooks/appdeploy/enact/00_unmount_s3fs.sh":
+        mode: "000755"
+        owner: root
+        group: root
+        content: |
+            #!/usr/bin/env bash
+
+            if mountpoint -q /s3fs/jupyternotebooks; then
+                fusermount -u /s3fs/jupyternotebooks
+            fi
+
+    "/opt/elasticbeanstalk/hooks/appdeploy/enact/01_mount_s3fs.sh":
+        mode: "000755"
+        owner: root
+        group: root
+        content: |
+            #!/usr/bin/env bash
+            # create mount point
+            mkdir -p /s3fs/jupyternotebooks
+            # try mounting as current user and use AWS credential3 file
+            s3fs s3fuse-jupyternotebook:$S3FUSE_BUCKET_PATH /s3fs/jupyternotebooks -o iam_role=auto -o nonempty -o uid=0 -o gid=0 -o use_cache=/tmp -o allow_other
+
+commands:
+    01_patch_s3fs:
+        cwd: /tmp/s3fs-fuse-1.80/src
+        command: "sed -i 's/AWSACCESSKEYID/$S3FUSE_IAM_ACCESSKEYID/g;s/AWSSECRETACCESSKEY/$S3FUSE_IAM_SECRETKEY/g' s3fs.cpp"
+
+    02_install_s3fs:
+        cwd: /tmp/s3fs-fuse-1.80
+        test: "[ ! -x /usr/bin/s3fs ]"
+        command: "autoreconf --install && export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig && ./configure --prefix=/usr && make && make install"
+
+```
