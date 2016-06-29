@@ -185,6 +185,11 @@ In particular it is the elasticbeanstalk-ec2-role that needs permission.
 #### Future automated deployments
 In future this project will perform the following automatically in a deployment script:
 
+-- automatic creation of IAM user for access to S3 buckets
+-- automatic creation of S3 bucket specific to this deploy
+-- automatic update of the credentials in environment.config
+-- automatically mount file system to docker
+
 1. Check AWS CLI & EB CLI installed, and credentials exist.
 2. Check status of container registry in Oregon (us-west-2).
 3. Create registry if it does not exist & set permissions
