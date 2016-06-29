@@ -30,6 +30,10 @@ during its build and will be able to clone prviate repos.
 ## Elastic File System EFS
 
 You are only able to run EFS in the same region as your EB deployment.
+At te time of writing EFS is only available in EU/Ireland US/Oregon and US/Virginia.
+
+In order for the mount command to succeed, it is important that Ingress traffic be permitted on
+port 2049 on the EFS security group, as well as on the EC2 instances in you EB deployment.
 
 ## Ports
 Jupyter Notebook is always run on port 3335, and Sifu on 3334. In future the option
