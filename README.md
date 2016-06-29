@@ -12,6 +12,20 @@ Each Docker container on an EB instance will use mounted volumes based off of th
 Elastic File System service. This means each container has the same access to
 user notebooks ensuring high availability across Docker containers.
 
+#### What You Need To Do First
+
+1. Set up a container registery, this can be any availability zone.
+   This is already done, and the latest base build of this projects is uploaded there.
+2. Follow the instructions provided in base-image/README.md. This will explain how to build
+   the docker image and upload it to ECR. This is already done. The current tagged version
+   to use in your Docker images is: ```353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest```
+3. Create an Elastic File System in the same region as your EB deploy.
+4. Edit overrides.cfg to include the EFS region name and EFS ID. And, set the name of the mount point.
+   ```~/efs-mount-point``` is default.
+5. Make sure that the EFS allows for Ingress traffic on NFS port 2049 from the EB EC2 instance. 
+   This is already handled for the EC2 instances in the ebextensions. 
+
+
 #### Regarding Access Tokens
 
 Access tokens need to be generated in github against a user's profile.
@@ -30,7 +44,7 @@ during its build and will be able to clone prviate repos.
 ## Elastic File System EFS
 
 You are only able to run EFS in the same region as your EB deployment.
-At te time of writing EFS is only available in EU/Ireland US/Oregon and US/Virginia.
+At the time of writing EFS is only available in EU/Ireland US/Oregon and US/Virginia.
 
 In order for the mount command to succeed, it is important that Ingress traffic be permitted on
 port 2049 on the EFS security group, as well as on the EC2 instances in you EB deployment.
@@ -192,6 +206,12 @@ In particular it is the elasticbeanstalk-ec2-role that needs permission.
 
 #### Future automated deployments
 In future this project will perform the following automatically in a deployment script:
+
+-- Need to create a overrides.cfg file that will be turned into ENV during the deploy process.
+-- Add the EFS CLI for creating a new file system on first deploy.
+-- Dockerrun.aws.json and the .ebextension will both need to use ENV vars.
+-- Configuration options should be passed to the deployment process as ENV vars.
+-- Congfiguration options should be separate from the repo
 
 1. Check AWS CLI & EB CLI installed, and credentials exist.
 2. Check status of container registry in Oregon (us-west-2).

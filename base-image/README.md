@@ -2,6 +2,9 @@
 ```bash
 docker build -t proversity-docker-jupyter .
 ```
+
+Make sure to have a deployment token from Github in .deployment_token. This will allow you clone private repos.
+
 ## Set up a registry
 1. Retrieve the docker login command that you can use to authenticate your Docker client to your registry:
 ```aws ecr get-login --region us-west-2```
