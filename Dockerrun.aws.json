@@ -11,7 +11,7 @@
   ],
   "Volumes": [
     {
-      "HostDirectory": "~/efs-mount-point",
+      "HostDirectory": "/root/efs-mount-point",
       "ContainerDirectory": "/notebooks"
     }
   ],
