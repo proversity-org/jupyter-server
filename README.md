@@ -21,6 +21,7 @@ at environment creation time, using the eb cli command:
 
 ```bash
 eb create --envvars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN
+eb create --envvars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database
 ```
 
 The docker build will reference the access token environment variable
