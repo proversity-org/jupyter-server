@@ -9,5 +9,11 @@
       "ContainerPort": ["3334", "3335"]
     }
   ],
+  "Volumes": [
+    {
+      "HostDirectory": "~/efs-mount-point",
+      "ContainerDirectory": "/notebooks"
+    }
+  ],
   "Logging": "/var/log/general"
 }
