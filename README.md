@@ -14,16 +14,23 @@ user notebooks ensuring high availability across Docker containers.
 
 #### What You Need To Do First
 
-1. Set up a container registery, this can be any availability zone.
+1. Set up a container registery, this can be any availability zone. Please read the note on ECR permissions below.
    This is already done, and the latest base build of this projects is uploaded there.
 2. Follow the instructions provided in base-image/README.md. This will explain how to build
    the docker image and upload it to ECR. This is already done. The current tagged version
    to use in your Docker images is: ```353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest```
 3. Create an Elastic File System in the same region as your EB deploy.
-4. Edit overrides.cfg to include the EFS region name and EFS ID. And, set the name of the mount point.
-   ```~/efs-mount-point``` is default.
-5. Make sure that the EFS allows for Ingress traffic on NFS port 2049 from the EB EC2 instance. 
-   This is already handled for the EC2 instances in the ebextensions. 
+4. Edit overrides.yml to include the EFS region name and EFS ID. And, set the name of the mount point ```~/efs-mount-point``` is default.
+   You do not need to include the availaility zone, as this is pulled dynamically during deployment.
+   These together form a DNS name for a mount target. AWS advises having having a mount target in each 
+   availability zone to improve reachability in scaled deployments.   
+5. Make sure that the EFS Security Group allows for Ingress traffic on NFS port 2049 from the EB EC2 instance. 
+   This is already handled for the EC2 instances in the ebextensions.
+6. Update overrides.yml to also include the RDS DB name, RDS PORT, RDS user and password. Include the Oauth2 client details
+   generated in the Edx admin backend for Sifu. Include also the IP address or domain of the Edx site which will be commuicating
+   with this service.
+7. ```$ eb init``` to prepare your environment.
+8. ```$ eb create --envars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database``` to create the environment and deploy the Docker app.
 
 
 #### Regarding Access Tokens
@@ -198,16 +205,14 @@ the EB instance security group, the EB load balancer security group and that the
 
 #### Note on ECR - permissions
 Permissions must be set on an ECR, so that Elastic Beanstalk may use it.
-This can be done in the console, but should really be handled in the script below.
-
-It is a role not a user that needs permission: arn:aws:iam::<account#>:role/aws-elasticbeanstalk-ec2-role
-
+This can be done in the console, but should really be handled in the script described in 'Future automated deployments'
+It is a __role__ not a __user__ that needs permission: arn:aws:iam::<account#>:role/aws-elasticbeanstalk-ec2-role
 In particular it is the elasticbeanstalk-ec2-role that needs permission.
 
 #### Future automated deployments
 In future this project will perform the following automatically in a deployment script:
 
--- Need to create a overrides.cfg file that will be turned into ENV during the deploy process.
+-- Need to create a overrides.yml file that will be turned into ENV during the deploy process.
 -- Add the EFS CLI for creating a new file system on first deploy.
 -- Dockerrun.aws.json and the .ebextension will both need to use ENV vars.
 -- Configuration options should be passed to the deployment process as ENV vars.

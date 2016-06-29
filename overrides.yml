@@ -1,0 +1,3 @@
+EFS_MOUNT_POINT: /root/efs-mount-point
+EFS_FS_ID: replace-with-efs-id
+EFS_REGION: replace-with-efs-region
