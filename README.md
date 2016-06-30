@@ -20,7 +20,7 @@ user notebooks ensuring high availability across Docker containers.
    the docker image and upload it to ECR. This is already done. The current tagged version
    to use in your Docker images is: ```353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest```
 3. Create an Elastic File System in the same region as your EB deploy.
-4. Edit overrides.yml to include the EFS region name and EFS ID. And, set the name of the mount point ```~/efs-mount-point``` is default.
+4. ``` mv overrides.yml.template overrides.yml``` and edit to include the EFS region name and EFS ID. And, set the name of the mount point ```~/efs-mount-point``` is default.
    You do not need to include the availaility zone, as this is pulled dynamically during deployment.
    These together form a DNS name for a mount target. AWS advises having having a mount target in each 
    availability zone to improve reachability in scaled deployments.   
@@ -32,6 +32,7 @@ user notebooks ensuring high availability across Docker containers.
 7. ```$ eb init``` to prepare your environment.
 8. ```$ eb create --envars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database``` to create the environment and deploy the Docker app.
 
+---- If the edx platform is running, is the api still on port 8001 when on staging?
 
 #### Regarding Access Tokens
 
