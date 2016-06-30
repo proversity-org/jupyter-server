@@ -26,4 +26,4 @@ if !File.directory?('.elasticbeanstalk')
 end
 
 # set environment variables needed for the deploy.
-system "eb setenv --timeout 900 #{parsed_envs(' ')}" # script that parses the overrides into K=V style
+system "eb setenv #{parsed_envs(' ')} --timeout 900" # script that parses the overrides into K=V style

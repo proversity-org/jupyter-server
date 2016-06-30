@@ -12,15 +12,8 @@ RUN mkdir -p /var/log/supervisor
 
 # SET UP ENV VARS
 ENV DOCKER_IP 0.0.0.0
-#ENV DB_NAME production
-#ENV RDS_USERNAME root
-#ENV RDS_PASSWORD secretsecret
-#ENV RDS_PORT 3306
-#ENV EDX_HOSTNAME:
-#ENV EDX_OAUTH2_CLIENT_ID:
-#ENV EDX_OAUTH2_CLIENT_SECRET:
-#ENV EDX_OAUTH2_CLIENT_REDIRECT_URI:
-#ENV EDX_OAUTH2_FORCE_SSL: false
+COPY docker_envs /tmp/docker_envs
+RUN source /tmp/docker_envs
 
 COPY overrides.yml /var/tmp/overrides.yml
 RUN 
