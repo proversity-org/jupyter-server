@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+require 'yaml'
+
+def parsed_envs()
+  if File.exists?('overrides.yml')
+    items = YAML::load(File.open("overrides.yml"))
+    exit('Nothing in your overrides.yml file!') if !items
+    result = ""
+    items.each do |k,v|
+      result += "#{k}=#{v} "
+    end
+    return result
+  else
+    puts 'Launch Error: You have not set up your overrides! Copy overrides.yml.template into overrides.yml and make appropriate changes.'
+    exit
+  end
+end
+
+if !File.directory?('.elasticbeanstalk')
+  system "eb init" #<-- pass through typrical information, DNS name, region etc
+
+  # Create the environment
+  system "eb create --database" # add more options to tailor the environment
+end
+
+# set environment variables needed for the deploy.
+system "eb setenv #{parsed_envs}" # script that parses the overrides into K=V style
