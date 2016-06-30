@@ -1,5 +1,10 @@
 FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
+# SET UP ENV VARS
+ENV DOCKER_IP 0.0.0.0
+COPY docker_envs /tmp/docker_envs
+RUN source /tmp/docker_envs
+
 # Prepare the database
 RUN /bin/bash -l -c "bundle exec rake db:migrate"
 RUN /bin/bash -l -c "bundle update rails_api_auth"
@@ -9,11 +14,6 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Supervirsor stuff: Set up loggin for now
 RUN mkdir -p /var/log/supervisor
-
-# SET UP ENV VARS
-ENV DOCKER_IP 0.0.0.0
-COPY docker_envs /tmp/docker_envs
-RUN source /tmp/docker_envs
 
 COPY overrides.yml /var/tmp/overrides.yml
 RUN 
