@@ -2,7 +2,7 @@
 
 require 'yaml'
 
-def parsed_envs()
+def parsed_envs
   if File.exists?('overrides.yml')
     items = YAML::load(File.open("overrides.yml"))
     exit('Nothing in your overrides.yml file!') if !items
@@ -21,7 +21,7 @@ if !File.directory?('.elasticbeanstalk')
   system "eb init" #<-- pass through typrical information, DNS name, region etc
 
   # Create the environment
-  system "eb create --database" # add more options to tailor the environment
+  system "eb create --database --envvars #{parsed_envs}" # add more options to tailor the environment
 end
 
 # set environment variables needed for the deploy.
