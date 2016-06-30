@@ -3,7 +3,7 @@ FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:late
 # SET UP ENV VARS
 ENV DOCKER_IP 0.0.0.0
 COPY docker_envs /tmp/docker_envs
-RUN source /tmp/docker_envs
+RUN /bin/bash -l -c "source /tmp/docker_envs"
 
 # Prepare the database
 RUN /bin/bash -l -c "bundle exec rake db:migrate"
