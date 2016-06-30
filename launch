@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 require 'yaml'
 
@@ -25,4 +25,4 @@ if !File.directory?('.elasticbeanstalk')
 end
 
 # set environment variables needed for the deploy.
-system "eb setenv #{parsed_envs}" # script that parses the overrides into K=V style
+system "eb setenv --timeout 900 #{parsed_envs}" # script that parses the overrides into K=V style
