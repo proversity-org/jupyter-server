@@ -30,7 +30,7 @@ RUN apt-get update && \
 # Copy over private key, and set permissions
 #ADD id_rsa /root/.ssh/id_rsa
 #RUN export GIT_SSH=/usr/bin/ssh
-#RUN git clone git@github.com:proversity-org/edx-api-jupyter.git
+#RUN git clone git@https://github.com/proversity-org/sifu.git
 
 ##################################################################
 
@@ -78,15 +78,10 @@ RUN apt-get autoremove
 # For .ebeextension solution to build args problem.
 COPY .deployment_token /tmp/.deployment_token
 
-ENV DB_NAME production
-ENV RDS_USERNAME root
-ENV RDS_PASSWORD secretsecret
-ENV RDS_PORT 3306
-
 # USING TOKENS ###################################################
 # Waiting for AWS to support build args in EB Docker deploys.
 #ARG DEPLOYMENT_TOKEN
-RUN git clone https://$(cat /tmp/.deployment_token):x-oauth-basic@github.com/proversity-org/edx-api-jupyter.git /tmpapp/
+RUN git clone https://$(cat /tmp/.deployment_token):x-oauth-basic@github.com/proversity-org/sifu.git /tmpapp/
 RUN mkdir /sifu/
 RUN cp -R /tmpapp/* /sifu/
 RUN cp -R -r /tmpapp/. /sifu/

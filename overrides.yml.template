@@ -1,4 +1,5 @@
-# EFS CONFIGURATION
+# EFS CONFIG
+# -------------------------------
 EFS_MOUNT_POINT: /root/efs-mount-point
 EFS_FS_ID: replace-with-efs-id
 EFS_REGION: replace-with-efs-region
@@ -6,12 +7,16 @@ EFS_REGION: replace-with-efs-region
 # edxexample.org OR IP
 EDX_HOSTNAME: 
 
-# OAUTH2 CONFIGURATION
+# OAUTH2 CONFIG
+# -------------------------------
 EDX_OAUTH2_CLIENT_ID:
 EDX_OAUTH2_CLIENT_SECRET:
+EDX_OAUTH2_CLIENT_REDIRECT_URI: # exampledomain.org OR IP
+EDX_OAUTH2_FORCE_SSL: false # NO SUPPORT FOR SSL
 
-# exampledomain.org OR IP
-EDX_OAUTH2_CLIENT_REDIRECT_URI:
-
-# NO SUPPORT FOR SSL
-EDX_OAUTH2_FORCE_SSL: false
+# RDS CONFIG
+# -------------------------------
+RDS_DB_NAME: production
+RDS_USERNAME: root
+RDS_PASSWORD: secretsecret
+RDS_PORT: 3306
