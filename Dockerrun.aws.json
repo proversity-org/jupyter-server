@@ -4,6 +4,10 @@
     "Name": "proversity/docker-jupyter",
     "Update": "true"
   },
+  "Volumes": [{
+    "HostDirectory": "/root/a-test-dir",
+    "ContainerDirectory": "/a-test-dir"
+  }],
   "Ports": [
     {
       "ContainerPort": ["3334", "3335"]

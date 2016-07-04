@@ -33,6 +33,7 @@ user notebooks ensuring high availability across Docker containers.
 8. ```$ eb create --envars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database``` to create the environment and deploy the Docker app.
 
 ---- If the edx platform is running, is the api still on port 8001 when on staging?
+---- Perhaps set up mapping first, then apply the mounting, and then restart Docker?
 
 #### Regarding Access Tokens
 
