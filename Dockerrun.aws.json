@@ -1,18 +1,8 @@
 {
   "AWSEBDockerrunVersion": "1",
-  "Image": {
-    "Name": "proversity/docker-jupyter",
-    "Update": "true"
-  },
   "Ports": [
     {
       "ContainerPort": ["3334", "3335"]
-    }
-  ],
-  "Volumes": [
-    {
-      "HostDirectory": "/root/efs-mount-point",
-      "ContainerDirectory": "/notebooks"
     }
   ],
   "Logging": "/var/log/general"

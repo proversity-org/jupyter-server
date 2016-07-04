@@ -10,13 +10,16 @@ def parsed_envs(delimeter)
     items.each do |k,v|
       result += "#{k}=#{v}#{delimeter}"
     end
-    result.slice!(0,result.length-1)
-    return result
+    return result.slice(0, result.length-1)
   else
     puts 'Launch Error: You have not set up your overrides! Copy overrides.yml.template into overrides.yml and make appropriate changes.'
     exit
   end
 end
+
+# generate Dockerrun.aws.json file
+
+
 
 if !File.directory?('.elasticbeanstalk')
   system "eb init" #<-- pass through typrical information, DNS name, region etc

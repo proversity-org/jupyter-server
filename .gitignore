@@ -1,6 +1,7 @@
 id_rsa
 *.zip
 .deployment_token
+docker_envs
 overrides.yml
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
