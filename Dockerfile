@@ -21,6 +21,7 @@ RUN sudo apt-get install -y cifs-utils nfs-common
 
 VOLUME /notebooks
 WORKDIR /notebooks
+
 EXPOSE 3334 3335
 
 CMD ["/usr/bin/supervisord"]
