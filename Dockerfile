@@ -3,7 +3,6 @@ FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:late
 # SET UP ENV VARS
 ENV DOCKER_IP 0.0.0.0
 COPY docker_envs /tmp/docker_envs
-COPY efs.sh /tmp/efs.sh
 
 RUN /bin/bash -l -c "echo \"source /tmp/docker_envs\" >> /etc/bash.bashrc"
 
