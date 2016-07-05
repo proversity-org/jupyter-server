@@ -5,7 +5,7 @@
     "Update": "true"
   },
   "Volumes": [{
-    "HostDirectory": "/root/efs-mount-point",
+    "HostDirectory": "/notebooks",
     "ContainerDirectory": "/notebooks"
   }],
   "Ports": [
