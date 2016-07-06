@@ -81,7 +81,7 @@ COPY .deployment_token /tmp/.deployment_token
 # USING TOKENS ###################################################
 # Waiting for AWS to support build args in EB Docker deploys.
 #ARG DEPLOYMENT_TOKEN
-RUN git clone https://$(cat /tmp/.deployment_token):x-oauth-basic@github.com/proversity-org/sifu.git /tmpapp/
+RUN git clone https://github.com/proversity-org/edx-xblock-sifu.git /tmpapp/
 RUN mkdir /sifu/
 RUN cp -R /tmpapp/* /sifu/
 RUN cp -R -r /tmpapp/. /sifu/
