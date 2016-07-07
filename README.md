@@ -33,6 +33,8 @@ user notebooks ensuring high availability across Docker containers.
 7. ```$ eb init``` to prepare your environment.
 8. ```$ eb create --envars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database``` to create the environment and deploy the Docker app.
 
+-- Update Access Control Rules
+
 #### Regarding Access Tokens
 
 Access tokens need to be generated in github against a user's profile.
@@ -214,6 +216,24 @@ Permissions must be set on an ECR, so that Elastic Beanstalk may use it.
 This can be done in the console, but should really be handled in the script described in 'Future automated deployments'
 It is a __role__ not a __user__ that needs permission: arn:aws:iam::<account#>:role/aws-elasticbeanstalk-ec2-role
 In particular it is the elasticbeanstalk-ec2-role that needs permission.
+
+#### Content Security
+Update these with the intended hostnames and port numbers, of a frame ancestor.
+
+E.g. A notebook is served in an iframe hosted www.example.com. The Content-Security-Policy would then be:
+
+```py
+""" This is for the JupyterHub CSP settings """
+c.JupyterHub.tornado_settings = {
+    'headers': {
+        'Content-Security-Policy': " 'www.example.com:80' "
+  }
+}
+...
+""" This is for the JupyterNotebook CSP settings """
+It must include sifu's address and the lms address.
+c.Spawner.args = ['--NotebookApp.tornado_settings={ \'headers\': { \'Content-Security-Policy\': "\'www.example.com:80\'"}}']
+```
 
 #### Future automated deployments
 In future this project will perform the following automatically in a deployment script:

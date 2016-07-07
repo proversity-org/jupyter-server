@@ -7,8 +7,6 @@ FROM jupyter/notebook
 RUN pip install --upgrade ipywidgets==5.0.0
 RUN jupyter nbextension enable -y widgetsnbextension
 
-RUN echo "c.NotebookApp.tornado_settings = { 'headers': { 'Content-Security-Policy': \"\",'Access-Control-Allow-Origin':\"*\",'Access-Control-Allow-Headers':\"origin, content-type,X-Requested-With, X-CSRF-Token\",'Access-Control-Expose-Headers':\"*\",'Access-Control-Allow-Credentials':\"true\",'Access-Control-Allow-Methods':\"PUT, DELETE, POST, GET OPTIONS\"}}" >> /root/.jupyter/jupyter_notebook_config.py
-
 RUN echo "c.Exporter.template_path = [os.path.join(jupyter_data_dir(), 'templates')] c.Exporter.preprocessors = [\"pre_codefolding.CodeFoldingPreprocessor\",\"pre_pymarkdown.PyMarkdownPreprocessor\"] c.NbConvertApp.postprocessor_class = \"post_embedhtml.EmbedPostProcessor\""
 
 RUN echo "c.NotebookApp.nbserver_extensions = ['nbextensions']" >> /root/.jupyter/jupyter_notebook_config.py
@@ -23,16 +21,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
-# USING DEPLOY KEYS ###############################################
-# Make ssh dir
-#RUN mkdir /root/.ssh/
-
-# Copy over private key, and set permissions
-#ADD id_rsa /root/.ssh/id_rsa
-#RUN export GIT_SSH=/usr/bin/ssh
-#RUN git clone git@github.com/proversity-org/edx-notebookauth-sifu.git
-
-##################################################################
 
 RUN touch /tmp/.ruby-version && touch /tmp/.docker-ruby-version
 COPY .ruby-version /tmp/.ruby-version
@@ -92,6 +80,3 @@ WORKDIR /sifu
 
 # Install Sifu gems
 RUN /bin/bash -l -c "bundle install"
-
-RUN git pull origin master
-

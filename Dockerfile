@@ -26,5 +26,9 @@ WORKDIR /notebooks
 
 EXPOSE 3334 3335
 
+# Update Notebook config.
+RUN /bin/bash -l -c "source /tmp/docker_envs && bash jupyter_cors.sh "
+
+
 CMD ["/usr/bin/supervisord"]
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/myapp/supervisord.conf"]
