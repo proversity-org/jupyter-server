@@ -1,7 +1,10 @@
 FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
+RUN git pull origin master
+
 # SET UP ENV VARS
 ENV DOCKER_IP 0.0.0.0
+
 COPY docker_envs /tmp/docker_envs
 
 RUN /bin/bash -l -c "echo \"source /tmp/docker_envs\" >> /etc/bash.bashrc"
@@ -16,6 +19,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Supervirsor stuff: Set up loggin for now
 RUN mkdir -p /var/log/supervisor
 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN sudo apt-get install -y cifs-utils nfs-common
 
 WORKDIR /notebooks

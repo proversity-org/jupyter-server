@@ -69,12 +69,14 @@ environment as well as listeners and security group ports.
 ```bash
 cd base-image
 # For the base image
-docker build --build-arg -t proversity/base-notebook
+docker build --build-arg -t proversity/base-notebook .
 
 cd ..
 # For the final image
 docker build --build-arg DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN -t proversity/notebook .
 ```
+
+Use --no-cache as a build flaf to invlidate cached intermediate containers.
 
 Build arguments are currently not supported by AWS Elastic Beanstalk, therefore for
 the time being you must ensure the deployment token exists in the project directory
