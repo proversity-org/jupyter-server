@@ -30,7 +30,7 @@ RUN apt-get update && \
 # Copy over private key, and set permissions
 #ADD id_rsa /root/.ssh/id_rsa
 #RUN export GIT_SSH=/usr/bin/ssh
-#RUN git clone git@https://github.com/proversity-org/sifu.git
+#RUN git clone git@github.com/proversity-org/edx-notebookauth-sifu.git
 
 ##################################################################
 
@@ -81,7 +81,7 @@ COPY .deployment_token /tmp/.deployment_token
 # USING TOKENS ###################################################
 # Waiting for AWS to support build args in EB Docker deploys.
 #ARG DEPLOYMENT_TOKEN
-RUN git clone https://github.com/proversity-org/edx-xblock-sifu.git /tmpapp/
+RUN git clone https://github.com/proversity-org/edx-notebookauth-sifu.git /tmpapp/
 RUN mkdir /sifu/
 RUN cp -R /tmpapp/* /sifu/
 RUN cp -R -r /tmpapp/. /sifu/
