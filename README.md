@@ -76,7 +76,7 @@ cd ..
 docker build --build-arg DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN -t proversity/notebook .
 ```
 
-Use --no-cache as a build flaf to invlidate cached intermediate containers.
+Use --no-cache as a build flag to invalidate cached intermediate containers.
 
 Build arguments are currently not supported by AWS Elastic Beanstalk, therefore for
 the time being you must ensure the deployment token exists in the project directory
