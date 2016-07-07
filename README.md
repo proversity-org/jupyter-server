@@ -20,7 +20,7 @@ user notebooks ensuring high availability across Docker containers.
    the docker image and upload it to ECR. This is already done. The current tagged version
    to use in your Docker images is: ```353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest```
 3. Create an Elastic File System in the same region as your EB deploy.
-4. ``` mv overrides.yml.template overrides.yml``` and edit to include the EFS region name and EFS ID. And, set the name of the mount point ```~/efs-mount-point``` is default.
+4. ``` mv overrides.yml.template overrides.yml``` and edit to include the EFS region name and EFS ID. And, set the name of the mount point ```~/notebooks``` is default.
    You do not need to include the availaility zone, as this is pulled dynamically during deployment.
    These together form a DNS name for a mount target. AWS advises having having a mount target in each 
    availability zone to improve reachability in scaled deployments.   
@@ -28,12 +28,10 @@ user notebooks ensuring high availability across Docker containers.
    This is already handled for the EC2 instances in the ebextensions.
 6. Update overrides.yml to also include the RDS DB name, RDS PORT, RDS user and password. Include the Oauth2 client details
    generated in the Edx admin backend for Sifu. Include also the IP address or domain of the Edx site which will be commuicating
-   with this service.
+   with this service. Note that if you must include the port number, if the Edx services are served using anything other than port 80. e.g. staging.proversity.org:8000
+   and staging.studios.org:8001 etc.
 7. ```$ eb init``` to prepare your environment.
 8. ```$ eb create --envars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database``` to create the environment and deploy the Docker app.
-
----- If the edx platform is running, is the api still on port 8001 when on staging?
----- Perhaps set up mapping first, then apply the mounting, and then restart Docker?
 
 #### Regarding Access Tokens
 
@@ -58,6 +56,10 @@ At the time of writing EFS is only available in EU/Ireland US/Oregon and US/Virg
 In order for the mount command to succeed, it is important that Ingress traffic be permitted on
 port 2049 on the EFS security group, as well as on the EC2 instances in you EB deployment.
 
+The elastic file system is set up by first performing the Docker build, and then upon running the container, adding the volume mapping between the host and the container.
+Once this is completed, and the container is running, a post deploy script will run and mount the EFS system on the host's mapped volume, the continer is then restarted
+and only then is the EFS file system available in the container to store and maintain notebooks.
+
 ## Ports
 Jupyter Notebook is always run on port 3335, and Sifu on 3334. In future the option
 to change these will be provided. But it speaks to the deployment process as a
@@ -69,13 +71,13 @@ environment as well as listeners and security group ports.
 ```bash
 cd base-image
 # For the base image
+cd base-image/
 docker build --build-arg -t proversity/base-notebook .
 
 cd ..
 # For the final image
 docker build --build-arg DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN -t proversity/notebook .
 ```
-
 Use --no-cache as a build flag to invalidate cached intermediate containers.
 
 Build arguments are currently not supported by AWS Elastic Beanstalk, therefore for
