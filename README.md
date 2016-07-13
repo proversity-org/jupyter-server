@@ -34,7 +34,8 @@ user notebooks ensuring high availability across Docker containers.
 8. ```$ eb create --envars DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN --database``` to create the environment and deploy the Docker app.
 
 -- Update Access Control Rules
-
+-- large_client_header_buffers 4 16k; // add support for large headers in nginx
+-- When running locally without --net=host don't add port mappings to the run command. Otherwise Nginx will not be able to bind.
 #### Regarding Access Tokens
 
 Access tokens need to be generated in github against a user's profile.

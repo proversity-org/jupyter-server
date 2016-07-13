@@ -1,5 +1,6 @@
 FROM 353198996426.dkr.ecr.us-west-2.amazonaws.com/proversity-docker-jupyter:latest
 
+RUN git checkout .
 RUN git pull origin master
 
 # SET UP ENV VARS
@@ -20,14 +21,15 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN mkdir -p /var/log/supervisor
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN sudo apt-get install -y cifs-utils nfs-common
+RUN sudo apt-get install -y cifs-utils nfs-common vim
 
 WORKDIR /notebooks
 
 EXPOSE 3334 3335
 
+COPY jupyter_cors.sh /tmp/jupyter_cors.sh
 # Update Notebook config.
-RUN /bin/bash -l -c "source /tmp/docker_envs && bash jupyter_cors.sh "
+RUN /bin/bash -l -c "source /tmp/docker_envs && bash /tmp/jupyter_cors.sh "
 
 
 CMD ["/usr/bin/supervisord"]
