@@ -10,6 +10,8 @@ COPY docker_envs /tmp/docker_envs
 
 RUN /bin/bash -l -c "echo \"source /tmp/docker_envs\" >> /etc/bash.bashrc"
 
+RUN sudo apt-get install -y libmysqlclient-dev
+
 # Prepare the database
 RUN /bin/bash -l -c "source /tmp/docker_envs && bundle exec rake db:migrate"
 RUN /bin/bash -l -c "source /tmp/docker_envs && bundle update rails_api_auth"
