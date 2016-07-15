@@ -8,7 +8,7 @@ RUN pip2 install --upgrade ipywidgets==5.0.0
 RUN pip2 install jupyter_nbextensions_configurator
 RUN pip2 install widgetsnbextension
 RUN pip2 install --upgrade https://github.com/ipython-contrib/IPython-notebook-extensions/tarball/master
-RUN jupyter nbextension enable -y widgetsnbextension
+#RUN jupyter nbextension enable widgetsnbextension
 
 #RUN echo "c.Exporter.template_path = [os.path.join(jupyter_data_dir(), 'templates')] c.Exporter.preprocessors = [\"pre_codefolding.CodeFoldingPreprocessor\",\"pre_pymarkdown.PyMarkdownPreprocessor\"] c.NbConvertApp.postprocessor_class = \"post_embedhtml.EmbedPostProcessor\""
 
@@ -20,7 +20,7 @@ ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/s
 # rvm stuff: Install base system libraries.
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl git supervisor libgmp3-dev libpng-dev libjpeg8-dev libfreetype6-dev && \
+    apt-get install -y --no-install-recommends curl libmysqlclient-dev git supervisor libgmp3-dev libpng-dev libjpeg8-dev libfreetype6-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
