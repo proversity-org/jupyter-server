@@ -4,12 +4,15 @@
 
 FROM jupyter/notebook
 
-RUN pip install --upgrade ipywidgets==5.0.0
+RUN pip2 install --upgrade ipywidgets==5.0.0
+RUN pip2 install jupyter_nbextensions_configurator
+RUN pip2 install widgetsnbextension
+RUN pip2 install --upgrade https://github.com/ipython-contrib/IPython-notebook-extensions/tarball/master
 RUN jupyter nbextension enable -y widgetsnbextension
 
-RUN echo "c.Exporter.template_path = [os.path.join(jupyter_data_dir(), 'templates')] c.Exporter.preprocessors = [\"pre_codefolding.CodeFoldingPreprocessor\",\"pre_pymarkdown.PyMarkdownPreprocessor\"] c.NbConvertApp.postprocessor_class = \"post_embedhtml.EmbedPostProcessor\""
+#RUN echo "c.Exporter.template_path = [os.path.join(jupyter_data_dir(), 'templates')] c.Exporter.preprocessors = [\"pre_codefolding.CodeFoldingPreprocessor\",\"pre_pymarkdown.PyMarkdownPreprocessor\"] c.NbConvertApp.postprocessor_class = \"post_embedhtml.EmbedPostProcessor\""
 
-RUN echo "c.NotebookApp.nbserver_extensions = ['nbextensions']" >> /root/.jupyter/jupyter_notebook_config.py
+#RUN echo "c.NotebookApp.nbserver_extensions = ['nbextensions']" >> /root/.jupyter/jupyter_notebook_config.py
 
 # rvm stuff
 ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
