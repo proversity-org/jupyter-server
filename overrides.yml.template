@@ -21,4 +21,6 @@ RDS_USERNAME: root
 RDS_PASSWORD: secretsecret
 RDS_PORT: 3306
 
-$EB_HOSTNAME: YOU_EB_HOSTNAME
+EB_REGION: 'us-west-2'
+EB_DNS: '{{ EB_REGION }}.elasticbeanstalk.com'
+EB_HOSTNAME: 'prov-docker{{ EB_DNS }}'
