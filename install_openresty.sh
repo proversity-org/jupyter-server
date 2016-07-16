@@ -8,7 +8,8 @@ VERSION='1.9.15.1'
 if [ -d /usr/local/openresty/ ]
 then
   exit
-fi 
+fi
+
 
 # Update sources list
 yum update
@@ -32,8 +33,8 @@ touch /etc/init.d/nginx
 cat /var/app/current/.ebextensions/.nginx/startup > /etc/init.d/nginx
 chmod 755 /etc/init.d/nginx
 
-mkdir /etc/nginx
-ln -s /etc/nginx /usr/local/openresty/nginx/conf/
+# Create symlink to make EB happy
+ln -s '/usr/local/openresty/nginx/conf/' '/etc/nginx'
 
 /etc/init.d/nginx restart
 
