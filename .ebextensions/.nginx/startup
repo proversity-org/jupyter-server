@@ -16,8 +16,7 @@
 nginx="/usr/local/openresty/nginx/sbin/nginx"
 prog=$(basename $nginx)
 
-# Use original nginx config and location 
-NGINX_CONF_FILE="/etc/nginx/nginx.conf"
+NGINX_CONF_FILE="/usr/local/openresty/nginx/conf/nginx.conf"
  
 lockfile=/var/lock/subsys/nginx
  

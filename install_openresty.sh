@@ -9,9 +9,10 @@ yum update
 # Install packages for compiling openresty
 yum install -y pcre-devel zlib-devel openssl-devel gcc make
 
-# Backup previous nginx rolledout with Amazon Linux and remove 
-mkdir /etc/nginx-backup && cp -r /etc/nginx/ /etc/nginx/nginx-backup
+# Remove Amazon Linux Nginx
 yum remove nginx -y
+
+rm -rf /etc/nginx/
 
 # Download and install openresty
 wget https://openresty.org/download/openresty-$VERSION.tar.gz
@@ -24,12 +25,10 @@ touch /etc/init.d/nginx
 cat /var/app/current/.ebextensions/.nginx/startup > /etc/init.d/nginx
 chmod 755 /etc/init.d/nginx
 
-rm -rf /etc/nginx/*
-cp -r /etc/nginx-backup/* /etc/nginx/
+mkdir /etc/nginx
+ln -s /etc/nginx /usr/local/openresty/nginx/conf/
 
 /etc/init.d/nginx restart
 
 # Run on startup
 /sbin/chkconfig nginx on
-
-
