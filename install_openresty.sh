@@ -24,6 +24,9 @@ touch /etc/init.d/nginx
 cat /var/app/current/.ebextensions/.nginx/startup > /etc/init.d/nginx
 chmod 755 /etc/init.d/nginx
 
+rm -rf /etc/nginx/*
+cp -r /etc/nginx-backup/* /etc/nginx/
+
 /etc/init.d/nginx restart
 
 # Run on startup
