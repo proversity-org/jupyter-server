@@ -3,6 +3,13 @@
 # Set openresty version
 VERSION='1.9.15.1'
 
+# Check if openresty is installed.
+
+if [ -d /usr/local/openresty/ ]
+then
+  exit
+fi 
+
 # Update sources list
 yum update
 
