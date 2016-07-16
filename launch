@@ -3,11 +3,21 @@
 require 'yaml'
 
 def parsed_envs(delimeter)
+  hash = {}
+
   if File.exists?('overrides.yml')
     items = YAML::load(File.open("overrides.yml"))
     exit('Nothing in your overrides.yml file!') if !items
     result = ""
     items.each do |k,v|
+      if v.class == String
+        while !v.index('{{').nil? do
+        str1 = "{{"
+        str2 = "}}"
+        v.sub!(v[/(\{\{.*?\}\})/, 1], hash[v[/#{str1}(.*?)#{str2}/m, 1].strip.to_sym])
+        end
+      end
+      hash[k.strip.to_sym] = v
       result += "#{k}=#{v}#{delimeter}"
     end
     return result.slice(0, result.length-1)
@@ -18,8 +28,6 @@ def parsed_envs(delimeter)
 end
 
 # generate Dockerrun.aws.json file
-
-
 
 if !File.directory?('.elasticbeanstalk')
   system "eb init" #<-- pass through typrical information, DNS name, region etc
