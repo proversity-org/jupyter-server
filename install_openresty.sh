@@ -10,13 +10,6 @@ then
   exit
 fi
 
-
-# Update sources list
-yum update
-
-# Install packages for compiling openresty
-yum install -y pcre-devel zlib-devel openssl-devel gcc make
-
 # Remove Amazon Linux Nginx
 yum remove nginx -y
 
